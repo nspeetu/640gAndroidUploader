@@ -13,13 +13,13 @@ public class PumpInfo extends RealmObject {
     private String deviceName;
     private byte lastRadioChannel;
     private RealmList<ContourNextLinkInfo> associatedCnls;
-    private RealmList<PumpStatusEvent> pumpHistory;
+    private RealmList<PumpStatusEvent> pumpHistory = new RealmList<>();
 
     public long getPumpMac() {
         return pumpMac;
     }
 
-    public void setPumpMac(long pumpMac) {
+    private void setPumpMac(long pumpMac) {
         this.pumpMac = pumpMac;
     }
 

@@ -35,7 +35,14 @@ public class HexDump {
         byte[] line = new byte[16];
         int lineIndex = 0;
 
+        result.append("\n          ");
+        for (int i = 0; i < Math.min(16, array.length); i++) {
+            result
+                    .append(" ?")
+                    .append(HEX_DIGITS[i]);
+        }
         result.append("\n0x");
+
         result.append(toHexString(offset));
 
         for (int i = offset; i < offset + length; i++) {
@@ -63,19 +70,17 @@ public class HexDump {
             line[lineIndex++] = b;
         }
 
-        if (lineIndex != 16) {
-            int count = (16 - lineIndex) * 3;
-            count++;
-            for (int i = 0; i < count; i++) {
-                result.append(" ");
-            }
+        int count = (16 - lineIndex) * 3;
+        count++;
+        for (int i = 0; i < count; i++) {
+            result.append(" ");
+        }
 
-            for (int i = 0; i < lineIndex; i++) {
-                if (line[i] > ' ' && line[i] < '~') {
-                    result.append(new String(line, i, 1));
-                } else {
-                    result.append(".");
-                }
+        for (int i = 0; i < lineIndex; i++) {
+            if (line[i] > ' ' && line[i] < '~') {
+                result.append(new String(line, i, 1));
+            } else {
+                result.append(".");
             }
         }
 
@@ -102,7 +107,12 @@ public class HexDump {
 
         return new String(buf);
     }
+
     public static String toHexString(int i) {
+        return toHexString(toByteArray(i));
+    }
+
+    public static String toHexString(long i) {
         return toHexString(toByteArray(i));
     }
 
@@ -123,6 +133,21 @@ public class HexDump {
         return array;
     }
 
+    public static byte[] toByteArray(long i) {
+        byte[] array = new byte[8];
+
+        array[7] = (byte) (i & 0x00FF);
+        array[6] = (byte) ((i >> 8) & 0x00FF);
+        array[5] = (byte) ((i >> 16) & 0x00FF);
+        array[4] = (byte) ((i >> 24) & 0x00FF);
+        array[3] = (byte) ((i >> 32) & 0x00FF);
+        array[2] = (byte) ((i >> 40) & 0x00FF);
+        array[1] = (byte) ((i >> 48) & 0x00FF);
+        array[0] = (byte) ((i >> 56) & 0x00FF);
+
+        return array;
+    }
+
     private static int toByte(char c) {
         if (c >= '0' && c <= '9')
             return (c - '0');
@@ -137,8 +162,8 @@ public class HexDump {
     public static byte[] hexStringToByteArray(String hexString) {
         int length = hexString.length();
         byte[] buffer = new byte[length / 2];
-        if (length% 2 == 1)
-        	length--;
+        if (length % 2 == 1)
+            length--;
         for (int i = 0; i < length; i += 2) {
             buffer[i / 2] = (byte) ((toByte(hexString.charAt(i)) << 4) | toByte(hexString
                     .charAt(i + 1)));
@@ -146,36 +171,39 @@ public class HexDump {
 
         return buffer;
     }
-    
-    public static int unsignedByte(byte b){
-    	return  (b & 0xFF);
+
+    public static int unsignedByte(byte b) {
+        return (b & 0xFF);
     }
-    
-    public static byte bUnsignedByte(byte b){
-    	return  (byte)(b & 0xFF);
+
+    public static byte bUnsignedByte(byte b) {
+        return (byte) (b & 0xFF);
     }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean isHexaNumber(String cadena) {
         try {
-            Long.parseLong(cadena,16);
+            Long.parseLong(cadena, 16);
             return true;
         } catch (NumberFormatException nfe) {
             return false;
         }
     }
-    
-    public static int byteArrayToInt (byte[] arr){
-    	int length = arr.length;
-    	int mult = 1;
-    	int res = 0;
-    	if (length > 0 && length <5){
-    		for (int i = length-1; i >= 0; i--){
-    			res += unsignedByte(arr[i])*mult;
-    			mult *=256;
-    		}
-    	}
-    	return res;
+
+    public static int byteArrayToInt(byte[] arr) {
+        int length = arr.length;
+        int mult = 1;
+        int res = 0;
+        if (length > 0 && length < 5) {
+            for (int i = length - 1; i >= 0; i--) {
+                res += unsignedByte(arr[i]) * mult;
+                mult *= 256;
+            }
+        }
+        return res;
     }
-    public static short byteArrayToShort (byte[] arr){
-    	return (short) (unsignedByte(arr[0])*256 + unsignedByte(arr[1]));
+
+    public static short byteArrayToShort(byte[] arr) {
+        return (short) (unsignedByte(arr[0]) * 256 + unsignedByte(arr[1]));
     }
 }
